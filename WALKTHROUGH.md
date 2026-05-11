@@ -142,7 +142,7 @@ Instead of clicking through 13 accounts manually in the portal I chose to fix it
 
 ![License Assignment Usage Location Error](Screenshots/12_license_assignment_usage_location_error.png)
 
-![Usage Location Error PowerShell Fix](Screenshots/13_usage_location_error_powershell_fix.png)
+![Usage Location Error PowerShell Fix](Screenshots/13_graph_module_not_installed..png)
 
 Three additional blockers came up during the PowerShell fix and all three were resolved.
 
@@ -332,7 +332,7 @@ Alert rule named ALERT - Break Glass Account Sign-In Detected. Severity set to 0
 
 After creation I navigated to Azure Monitor Alert rules and confirmed the rule is listed as Enabled with Severity 0 - Critical, targeting law-iam-lab, using Log search as the signal type. The alert is armed and watching. No alerts have fired because the break glass account has not been used, which is exactly the expected state.
 
-![Alert Rule Enabled Active Monitoring](Screenshots/51_alert_rule_enabled_active_monitoring.png)
+![Alert Rule Enabled Active Monitoring](Screenshots/51_alert_rules_active_monitoring.png)
 
 ---
 
