@@ -1,0 +1,29 @@
+# CA002 - All Users - Block Legacy Authentication
+
+## Purpose
+Blocks all legacy authentication protocols that do not support modern MFA, closing the most common bypass route for credential attacks.
+
+## Scope
+- Included: All users
+- Excluded: Break Glass Emergency, labadmin, Justin Gallimore
+
+## Target Resources
+All cloud applications
+
+## Conditions
+Client apps: Exchange ActiveSync clients, Other clients
+
+## Grant Controls
+Block access
+
+## Policy State
+Report-only
+
+## Why This Policy Exists
+Legacy protocols like POP, IMAP, and SMTP AUTH do not support MFA. If CA001 requires MFA but legacy auth is not blocked, an attacker can bypass MFA entirely by using a legacy protocol with a stolen password.
+
+## Real World Impact
+Microsoft reports that over 99% of password spray attacks use legacy authentication. Blocking it eliminates that entire attack vector.
+
+## Notes
+This policy must be validated carefully before enabling. Any service accounts or applications using legacy auth will break when this goes live.

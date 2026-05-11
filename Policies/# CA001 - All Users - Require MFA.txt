@@ -1,0 +1,23 @@
+# CA001 - All Users - Require MFA
+
+## Purpose
+Enforces multifactor authentication for all users across all cloud applications as the baseline security control for the tenant.
+
+## Scope
+- Included: All users
+- Excluded: Break Glass Emergency, labadmin, Justin Gallimore
+
+## Target Resources
+All cloud applications
+
+## Grant Controls
+Require multifactor authentication
+
+## Policy State
+Report-only
+
+## Why This Policy Exists
+MFA is the single most effective control against credential-based attacks. This policy ensures no user can access any application with a password alone.
+
+## Notes
+This is the baseline policy. All other policies layer on top of this one.

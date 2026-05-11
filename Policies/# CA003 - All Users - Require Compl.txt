@@ -1,0 +1,26 @@
+# CA003 - All Users - Require Compliant Device
+
+## Purpose
+Ensures users can only access cloud resources from devices that are either Intune compliant or Entra hybrid joined, enforcing device health as part of the access decision.
+
+## Scope
+- Included: All users
+- Excluded: Break Glass Emergency, labadmin, Justin Gallimore
+
+## Target Resources
+All cloud applications
+
+## Grant Controls
+Require device to be marked as compliant OR Require Microsoft Entra hybrid joined device
+
+## Policy State
+Report-only
+
+## Why This Policy Exists
+Identity alone is not enough to trust a connection. A valid user on a compromised or unmanaged device is still a risk. This policy adds device health as a second signal beyond identity.
+
+## Real World Impact
+Prevents access from personal unmanaged devices, compromised endpoints, or attacker-controlled machines even when valid credentials are used.
+
+## Notes
+OR logic is used intentionally. A device must satisfy one condition, not both. Intune compliance covers cloud managed devices. Hybrid join covers on-premises domain joined devices.

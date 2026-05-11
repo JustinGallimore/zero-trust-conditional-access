@@ -1,0 +1,29 @@
+# CA004 - All Users - Require MFA on Sign-In Risk
+
+## Purpose
+Triggers a real-time MFA step-up challenge when Microsoft Identity Protection detects a medium or high risk sign-in, such as impossible travel, anonymous IP, or unfamiliar sign-in properties.
+
+## Scope
+- Included: All users
+- Excluded: Break Glass Emergency, labadmin, Justin Gallimore
+
+## Target Resources
+All cloud applications
+
+## Conditions
+Sign-in risk level: Medium, High
+
+## Grant Controls
+Require multifactor authentication
+
+## Policy State
+Report-only
+
+## Why This Policy Exists
+Not all suspicious sign-ins happen at predictable times. This policy uses Microsoft's real-time threat intelligence to catch anomalous behavior mid-session and force re-verification before access is granted.
+
+## Real World Impact
+If a user's credentials are used from an unfamiliar location or anonymous proxy, the system challenges the sign-in in real time rather than allowing silent access.
+
+## Notes
+Requires Entra ID P2 license. Identity Protection must be active on the tenant for risk signals to fire.

@@ -1,0 +1,29 @@
+# CA005 - All Users - Require Password Change on High User Risk
+
+## Purpose
+Forces a mandatory password change when a user account is flagged as high risk by Microsoft Identity Protection, such as when credentials appear in a known breach database.
+
+## Scope
+- Included: All users
+- Excluded: Break Glass Emergency, labadmin, Justin Gallimore
+
+## Target Resources
+All cloud applications
+
+## Conditions
+User risk level: High
+
+## Grant Controls
+Require password change, Multifactor authentication
+
+## Policy State
+Report-only
+
+## Why This Policy Exists
+When a user's credentials are confirmed compromised, requiring MFA alone is not enough. The compromised password must be changed immediately. This policy automates that response without requiring manual admin intervention.
+
+## Real World Impact
+Reduces the window of exposure when credentials are breached. Instead of waiting for an admin to notice and manually reset the password, the system forces remediation the next time the user signs in.
+
+## Notes
+Requires Entra ID P2 license. User risk is evaluated over time by Identity Protection, not just at the moment of sign-in.

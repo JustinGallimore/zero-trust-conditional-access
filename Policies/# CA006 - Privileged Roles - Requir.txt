@@ -1,0 +1,26 @@
+# CA006 - Privileged Roles - Require Phishing Resistant MFA
+
+## Purpose
+Enforces phishing-resistant MFA specifically for privileged directory roles, requiring FIDO2 keys, Windows Hello, or passkeys instead of standard push notification MFA.
+
+## Scope
+- Included: Global Administrator, Privileged Role Administrator, Security Administrator, Exchange Administrator, SharePoint Administrator, User Administrator, Conditional Access Administrator
+- Excluded: Break Glass Emergency, labadmin
+
+## Target Resources
+All cloud applications
+
+## Grant Controls
+Require authentication strength: Phishing-resistant MFA
+
+## Policy State
+Report-only
+
+## Why This Policy Exists
+Admin accounts are the highest value targets in any tenant. Standard push notification MFA is vulnerable to MFA fatigue attacks where attackers spam approval requests until a user accidentally approves one. Phishing-resistant MFA cannot be intercepted, replayed, or socially engineered.
+
+## Real World Impact
+Even if an admin's password is stolen and they are targeted with MFA fatigue, phishing-resistant MFA blocks the attack completely because the authentication is cryptographically bound to the legitimate site.
+
+## Notes
+This is the strictest policy in the set. Admins must register a FIDO2 key, Windows Hello, or passkey before this policy can be enforced. Enabling before registration will lock admins out.
