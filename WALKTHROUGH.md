@@ -20,7 +20,9 @@ My primary admin account was an external Microsoft Account attached to the tenan
 
 To fix it I created a new native internal admin account called labadmin with Global Administrator rights and completed the P2 trial activation through that account via the Microsoft 365 admin center checkout flow. The trial provides 100 licenses for 30 days at no cost.
 
-**Screenshots: 01_p2_trial_activated, 02_p2_license_active**
+![P2 Trial Activated](Screenshots/01_p2_trial_activated.png)
+
+![P2 License Active](Screenshots/02_p2_license_active.png)
 
 ---
 
@@ -40,19 +42,13 @@ The reason this exists is simple. If you misconfigure a Conditional Access polic
 
 The password for this account is strong and stored offline on paper, not in a password manager or digital system, because the whole point is that it works when everything else is broken.
 
-**Screenshot: 03_break_glass_account_created**
+![Break Glass Account Created](Screenshots/03_break_glass_account_created.png)
 
 ---
 
 ### Setting Up the Local Folder Structure
 
-Before building any policies I created the local project folder at:
-
-```
-G:\HomeLab\IAM-Portfolio\01-conditional-access
-```
-
-With subfolders for Screenshots and Policies. This is the folder structure that maps directly to this GitHub repository.
+Before building any policies I created the local project folder at G:\HomeLab\IAM-Portfolio\01-conditional-access with subfolders for Screenshots and Policies. This is the folder structure that maps directly to this GitHub repository.
 
 ---
 
@@ -60,7 +56,7 @@ With subfolders for Screenshots and Policies. This is the folder structure that 
 
 All six policies were built from the Conditional Access blade in the Entra admin center. Every policy was set to Report-only mode, not Enabled, so they log and simulate results without enforcing. All policies exclude the break glass account, labadmin, and Justin Gallimore as safety exclusions.
 
-**Screenshot: 04_conditional_access_overview**
+![Conditional Access Overview](Screenshots/04_conditional_access_overview.png)
 
 ---
 
@@ -72,7 +68,9 @@ Scope is all users across all cloud apps. The grant control is Require multifact
 
 This policy alone closes the single most common attack vector in enterprise environments which is credential stuffing. A stolen password is worthless if MFA is enforced on every sign-in.
 
-**Screenshots: 05_ca001_policy_configured, 06_ca001_created_successfully**
+![CA001 Policy Configured](Screenshots/05_ca001_policy_configured.png)
+
+![CA001 Created Successfully](Screenshots/06_ca001_created_successfully.png)
 
 ---
 
@@ -84,7 +82,7 @@ This policy targets the Client apps condition specifically, selecting Exchange A
 
 Blocking legacy authentication is one of the highest impact single policy changes an organization can make. Microsoft's own data shows that over 99% of password spray attacks and a significant portion of credential stuffing attacks use legacy protocols.
 
-**Screenshot: 07_ca002_created_successfully**
+![CA002 Created Successfully](Screenshots/07_ca002_created_successfully.png)
 
 ---
 
@@ -96,7 +94,7 @@ The OR logic here is intentional and important. Using AND would require a device
 
 For this homelab environment macOS, iOS, Android, and Linux device platforms were excluded since those devices are not enrolled in the lab tenant.
 
-**Screenshot: 08_ca003_created_successfully**
+![CA003 Created Successfully](Screenshots/08_ca003_created_successfully.png)
 
 ---
 
@@ -108,7 +106,7 @@ When Microsoft's threat intelligence detects a suspicious sign-in, it assigns a 
 
 This policy targets Medium and High sign-in risk. When either is detected the grant control steps up to require MFA before access is granted. A legitimate user who is actually traveling internationally will be able to complete MFA and get in. An attacker using stolen credentials who cannot complete MFA will be blocked.
 
-**Screenshot: 09_ca004_created_policies_list**
+![CA004 Created Policies List](Screenshots/09_ca004_created_policies_list.png)
 
 ---
 
@@ -118,58 +116,61 @@ This policy handles the scenario where Microsoft's threat intelligence flags a u
 
 When user risk hits High this policy forces a mandatory password reset combined with MFA strength requirements. The user cannot access anything in the tenant until both are completed. This immediately cuts off any attacker who may have the current credentials while forcing the legitimate user to establish new ones.
 
-**Screenshot: 10_ca001_to_ca005_all_created**
+![CA001 to CA005 All Created](Screenshots/10_ca001_to_ca005_all_created.png)
 
 ---
 
 ### CA006: Privileged Roles - Require Phishing Resistant MFA
 
-This is the most targeted and highest security policy in the set. It applies specifically to seven privileged directory roles:
-
-- Global Administrator
-- Privileged Role Administrator
-- Security Administrator
-- Exchange Administrator
-- SharePoint Administrator
-- User Administrator
-- Conditional Access Administrator
+This is the most targeted and highest security policy in the set. It applies specifically to seven privileged directory roles including Global Administrator, Privileged Role Administrator, Security Administrator, Exchange Administrator, SharePoint Administrator, User Administrator, and Conditional Access Administrator.
 
 These are the accounts with the most destructive potential if compromised. Standard push notification MFA is not sufficient for these accounts because it is vulnerable to MFA fatigue attacks where an attacker spams approval requests until the legitimate user accidentally hits approve out of frustration or confusion.
 
 The grant control is Require authentication strength set to Phishing-resistant MFA which enforces FIDO2 security keys, Windows Hello for Business, or passkeys only. A standard Authenticator app push notification does not satisfy this requirement for these roles.
 
-**Screenshot: 11_all_six_policies_complete**
+![All Six Policies Complete](Screenshots/11_all_six_policies_complete.png)
 
 ---
 
 ## Phase 3: License Assignment and PowerShell Remediation
 
-After all six policies were built I attempted to assign P2 licenses to all 13 users in the tenant through the Microsoft 365 admin center.
-
-Every single user failed with the error: license assignment cannot be done for user with invalid usage location.
+After all six policies were built I attempted to assign P2 licenses to all 13 users in the tenant through the Microsoft 365 admin center bulk assignment flow. Every single user failed with the error: license assignment cannot be done for user with invalid usage location.
 
 The root cause was that every user account had been provisioned without a usage location property. Microsoft requires this field to be set before any Microsoft 365 or Entra license can be assigned because licensing terms vary by country.
 
-Instead of clicking through 13 accounts manually in the portal I chose to fix it with PowerShell and Microsoft Graph. This approach demonstrates engineering thinking over technician clicking and is significantly more impressive for a portfolio.
+Instead of clicking through 13 accounts manually in the portal I chose to fix it with PowerShell and Microsoft Graph.
 
-Three additional blockers came up during the PowerShell fix and all three were resolved:
+![License Assignment Usage Location Error](Screenshots/12_license_assignment_usage_location_error.png)
 
-The Microsoft Graph module was not installed on the machine. Fixed by running:
+![Usage Location Error PowerShell Fix](Screenshots/13_usage_location_error_powershell_fix.png)
+
+Three additional blockers came up during the PowerShell fix and all three were resolved.
+
+The Microsoft Graph module was not installed on the machine.
+
+![Graph Module Installed](Screenshots/14_graph_module_installed.png)
+
+Fixed by running:
 ```powershell
 Install-Module Microsoft.Graph -Scope CurrentUser -Force
 ```
 
-The PowerShell execution policy was set to Restricted which blocked the module from loading. Fixed by running:
+The Connect-MgGraph command failed to load the authentication module.
+
+![Connect MgGraph Module Load Error](Screenshots/15_connect_mggraph_module_load_error.png)
+
+The PowerShell execution policy was set to Restricted which blocked the module from loading.
+
+![Execution Policy Blocked Error](Screenshots/16_execution_policy_blocked_error.png)
+
+Fixed by running:
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-The Connect-MgGraph command failed to load the authentication module. Fixed by importing it manually first:
-```powershell
-Import-Module Microsoft.Graph.Authentication
-```
+After resolving all three blockers I connected to Microsoft Graph with labadmin and ran the bulk remediation script.
 
-After resolving all three blockers I connected to Microsoft Graph with labadmin and ran the bulk remediation script:
+![Connected to Microsoft Graph](Screenshots/17_connected_to_microsoft_graph.png)
 
 ```powershell
 Get-MgUser -All | ForEach-Object {
@@ -178,9 +179,13 @@ Get-MgUser -All | ForEach-Object {
 }
 ```
 
+![Bulk Usage Location Updated](Screenshots/18_bulk_usage_location_updated.png)
+
 All 13 users updated in a single execution. License assignment completed successfully after remediation.
 
-**Screenshots: 12_license_assignment_usage_location_error, 13_usage_location_error_powershell_fix, 14_graph_module_installed, 15_connect_mggraph_module_load_error, 16_execution_policy_blocked_error, 17_connected_to_microsoft_graph, 18_bulk_usage_location_updated, 19_p2_licenses_being_assigned, 20_p2_licenses_assigned_all_users**
+![P2 Licenses Being Assigned](Screenshots/19_p2_licenses_being_assigned.png)
+
+![P2 Licenses Assigned All Users](Screenshots/20_p2_licenses_assigned_all_users.png)
 
 ---
 
@@ -190,9 +195,11 @@ With all six policies built and all users licensed I needed to validate that the
 
 I navigated to Conditional Access, Sign-in logs, clicked into a live sign-in event, and opened the Report-only tab. All six policies were visible by name in the evaluation results with their simulated outcomes showing what would have happened if each policy were enforced rather than in report-only mode.
 
-This is the proof that the entire framework is wired correctly and actively evaluating every sign-in in the tenant.
+![Sign In Logs Active](Screenshots/21_sign_in_logs_active.png)
 
-**Screenshots: 21_sign_in_logs_active, 22_report_only_all_six_policies_logging**
+![Report Only All Six Policies Logging](Screenshots/22_report_only_all_six_policies_logging.png)
+
+This is the proof that the entire framework is wired correctly and actively evaluating every sign-in in the tenant.
 
 ---
 
@@ -208,23 +215,49 @@ The break glass account should essentially never be used. It exists only for eme
 
 To build the alert infrastructure I needed to create Azure resources including a Log Analytics workspace. This required labadmin to have Azure RBAC permissions on the Azure subscription, not just Entra ID Global Administrator rights.
 
-When I navigated to the Azure subscription Access control IAM page to assign the Contributor role, the Add role assignment button was completely greyed out. labadmin had zero Azure role assignments.
+When I navigated to the Azure subscription Access control IAM page to assign the Contributor role, the Add role assignment button was completely greyed out. labadmin had Global Administrator rights in Entra ID but zero Azure RBAC roles on the subscription. These are two completely separate permission systems.
 
-The fix required navigating to Entra admin center, Default Directory Properties, and enabling the Access management for Azure resources toggle. This elevated labadmin to User Access Administrator across all Azure subscriptions in the tenant which then allowed the Contributor role assignment to be completed.
+![Add Role Assignment Greyed Out](Screenshots/25_add_role_assignment_greyed_out.png)
 
-After assigning the Contributor role I immediately went back to Entra Properties and disabled the toggle to follow least privilege. Leaving elevated access open after use is a security risk even in a lab environment.
+The fix required navigating to Entra admin center, Default Directory Properties, and enabling the Access management for Azure resources toggle.
 
-**Screenshots: 25_add_role_assignment_greyed_out, 26_azure_access_management_toggle_off, 27_azure_access_management_toggle_enabled, 28_add_role_assignment_now_available, 29_contributor_role_selected, 30_labadmin_contributor_member_selected, 31_assignment_type_active_permanent, 33_labadmin_contributor_role_assigned_success, 34_azure_access_management_toggle_disabled_least_privilege**
+![Azure Access Management Toggle Off](Screenshots/26_azure_access_management_toggle_off.png)
+
+![Azure Access Management Toggle Enabled](Screenshots/27_azure_access_management_toggle_enabled.png)
+
+After enabling the toggle the Add role assignment button was immediately available.
+
+![Add Role Assignment Now Available](Screenshots/28_add_role_assignment_now_available.png)
+
+I selected the Contributor role from the Privileged administrator roles tab.
+
+![Contributor Role Selected](Screenshots/29_contributor_role_selected.png)
+
+I added labadmin as the member.
+
+![labadmin Contributor Member Selected](Screenshots/30_labadmin_contributor_member_selected.png)
+
+Assignment type set to Active and Permanent so the role does not expire mid-lab.
+
+![Assignment Type Active Permanent](Screenshots/31_assignment_type_active_permanent.png)
+
+![labadmin Contributor Role Assigned Success](Screenshots/33_labadmin_contributor_role_assigned_success.png)
+
+After the role was assigned I immediately returned to Entra Properties and disabled the toggle to follow least privilege. Leaving elevated access enabled after the task is complete violates least privilege principles.
+
+![Azure Access Management Toggle Disabled Least Privilege](Screenshots/34_azure_access_management_toggle_disabled_least_privilege.png)
 
 ---
 
 ### Step 2: Creating the Resource Group
 
-With permissions fixed I created the resource group rg-iam-lab in Azure subscription 1 in the East US region. This is the container that holds all the lab infrastructure.
+With permissions fixed I created the resource group rg-iam-lab in Azure subscription 1 in East US. The first attempt failed immediately with a permissions error. The root cause was Azure RBAC propagation delay. Role assignments do not take effect instantly and the old browser token did not yet include the new role.
 
-The first attempt failed immediately with a permissions error even though the Contributor role had just been assigned. The root cause was Azure RBAC propagation delay. Role assignments do not take effect instantly. After waiting approximately 3 minutes and retrying the resource group was created successfully.
+![Resource Group Permissions Error](Screenshots/35_resource_group_permissions_error.png)
 
-**Screenshots: 35_resource_group_permissions_error, 36_resource_group_created_success**
+After waiting approximately 3 minutes and retrying the resource group was created successfully.
+
+![Resource Group Created Success](Screenshots/36_resource_group_created_success.png)
 
 ---
 
@@ -232,89 +265,88 @@ The first attempt failed immediately with a permissions error even though the Co
 
 Inside rg-iam-lab I created a Log Analytics workspace named law-iam-lab in East US. This is the destination where Entra ID sign-in logs get streamed for querying and alerting.
 
-**Screenshots: 37_log_analytics_workspace_review, 38_log_analytics_workspace_deployed, 39_log_analytics_workspace_overview**
+![Log Analytics Workspace Review](Screenshots/37_log_analytics_workspace_review.png)
+
+![Log Analytics Workspace Deployed](Screenshots/38_log_analytics_workspace_deployed.png)
+
+![Log Analytics Workspace Overview](Screenshots/39_log_analytics_workspace_overview.png)
 
 ---
 
 ### Step 4: Streaming Entra Sign-In Logs
 
-In the Entra admin center under Diagnostic settings I created a new diagnostic setting named stream-signin-logs. I selected four log categories to stream:
+In the Entra admin center under Diagnostic settings I created a new diagnostic setting named stream-signin-logs. I selected AuditLogs, SignInLogs, RiskyUsers, and UserRiskEvents to stream continuously into law-iam-lab.
 
-- AuditLogs
-- SignInLogs
-- RiskyUsers
-- UserRiskEvents
+![Diagnostic Settings Empty](Screenshots/40_diagnostic_settings_empty.png)
 
-The destination was set to Send to Log Analytics workspace pointing to law-iam-lab. Once saved Entra begins continuously streaming identity logs into the workspace where KQL queries can search them in near real-time.
+![Diagnostic Setting Configured](Screenshots/41_diagnostic_setting_configured.png)
 
-**Screenshots: 40_diagnostic_settings_empty, 41_diagnostic_setting_configured, 42_diagnostic_setting_saved**
+![Diagnostic Setting Saved](Screenshots/42_diagnostic_setting_saved.png)
 
 ---
 
 ### Step 5: Building the Alert Rule
 
-In Azure Monitor I created an alert rule with the following configuration:
+In Azure Monitor I created an alert rule scoped to law-iam-lab using a custom KQL log search signal.
 
-Scope: law-iam-lab Log Analytics workspace
+![Alert Rule Scope Selected](Screenshots/43_alert_rule_scope_selected.png)
 
-Signal: Custom log search using this KQL query:
+The KQL query watches specifically for the break glass account UPN in the SigninLogs table. Any sign-in from this account fires the alert.
+
 ```kql
 SigninLogs
 | where UserPrincipalName == "breakglass@justingallimoregmail.onmicrosoft.com"
 ```
 
-Measurement:
-- Measure: Table rows
-- Aggregation type: Count
-- Aggregation granularity: 5 minutes
+![Alert Rule KQL Query Configured](Screenshots/44_alert_rule_kql_query_configured.png)
 
-Alert logic:
-- Operator: Greater than
-- Threshold value: 0
-- Frequency of evaluation: 5 minutes
+Measurement set to Table rows with Count aggregation and 5 minute granularity. Alert logic set to Greater than 0, evaluated every 5 minutes. This means even a single sign-in from the break glass account triggers the alert within the next evaluation window.
 
-This means the alert fires any time the break glass account appears even once in a 5 minute window.
-
-**Screenshots: 43_alert_rule_scope_selected, 44_alert_rule_kql_query_configured, 45_alert_rule_condition_configured**
+![Alert Rule Condition Configured](Screenshots/45_alert_rule_condition_configured.png)
 
 ---
 
 ### Step 6: Creating the Action Group
 
-The action group ag-breakglass-notify defines what happens when the alert fires. I configured it to send an email notification to my personal email address with the subject line CRITICAL: Break Glass Account Sign-In Detected.
+The action group ag-breakglass-notify defines what happens when the alert fires. Configured to send an email notification to my personal email address with the subject CRITICAL: Break Glass Account Sign-In Detected.
 
-**Screenshots: 46_action_group_email_notification_configured, 47_action_group_created_attached_to_alert**
+![Action Group Email Notification Configured](Screenshots/46_action_group_email_notification_configured.png)
+
+![Action Group Created Attached to Alert](Screenshots/47_action_group_created_attached_to_alert.png)
 
 ---
 
 ### Step 7: Finalizing the Alert Rule
 
-Back in the alert rule Details tab I set:
+Alert rule named ALERT - Break Glass Account Sign-In Detected. Severity set to 0 - Critical which is the highest severity level in Azure Monitor.
 
-- Severity: 0 - Critical
-- Alert rule name: ALERT - Break Glass Account Sign-In Detected
-- Description: Fires when the break glass emergency account signs in. Immediate investigation required.
+![Alert Rule Details Configured](Screenshots/48_alert_rule_details_configured.png)
 
-**Screenshots: 48_alert_rule_details_configured, 49_alert_rule_review_summary, 50_alert_rule_created_success**
+![Alert Rule Review Summary](Screenshots/49_alert_rule_review_summary.png)
+
+![Alert Rule Created Success](Screenshots/50_alert_rule_created_success.png)
 
 ---
 
 ### Validation
 
-After creation I navigated to Azure Monitor, Alert rules and confirmed the rule is listed as Enabled with Severity 0 - Critical, targeting law-iam-lab, using Log search as the signal type. The alert is armed and watching.
+After creation I navigated to Azure Monitor Alert rules and confirmed the rule is listed as Enabled with Severity 0 - Critical, targeting law-iam-lab, using Log search as the signal type. The alert is armed and watching. No alerts have fired because the break glass account has not been used, which is exactly the expected state.
 
-**Screenshot: 51_alert_rule_enabled_active**
+![Alert Rule Enabled Active Monitoring](Screenshots/51_alert_rule_enabled_active_monitoring.png)
 
 ---
 
 ## What This Project Demonstrates
 
-By the end of this build the environment had:
-
-A complete Zero Trust access control framework with six layered Conditional Access policies covering MFA enforcement, legacy authentication blocking, device compliance, real-time risk-based step-up authentication, compromised account response, and phishing-resistant MFA for privileged roles.
+By the end of this build the environment had a complete Zero Trust access control framework with six layered Conditional Access policies covering MFA enforcement, legacy authentication blocking, device compliance, real-time risk-based step-up authentication, compromised account response, and phishing-resistant MFA for privileged roles.
 
 A break glass emergency account properly created, excluded from all policies, and actively monitored with a live KQL alert rule that fires a Critical severity email notification within 5 minutes of any sign-in.
 
 Real production obstacles documented and resolved including P2 activation issues, bulk license assignment failures requiring PowerShell remediation, Azure RBAC permission separation from Entra ID roles, and RBAC propagation delays.
 
 Every error made this project stronger. Every fix is documented. That is what real IAM engineering looks like.
+
+---
+
+**Justin Gallimore | IAM Engineer**
+[GitHub](https://github.com/JustinGallimore) | [LinkedIn](https://www.linkedin.com/in/justingallimore)
