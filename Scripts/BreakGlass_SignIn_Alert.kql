@@ -1,0 +1,72 @@
+// =============================================================================
+// BreakGlass_SignIn_Alert.kql
+// Author: Justin Gallimore
+// Description: Monitors sign-in activity for the break glass account and alerts
+//              any time it is used. Break glass accounts are emergency admin
+//              accounts that exist outside of normal Conditional Access policies
+//              and MFA requirements. They should almost never be used — any
+//              sign-in from this account is a high-priority event that needs
+//              immediate investigation.
+//              This query is designed to run in Microsoft Sentinel or the
+//              Log Analytics workspace connected to your Entra ID tenant.
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// CONFIGURATION
+// Replace the placeholder UPN with your actual break glass account UPN.
+// If you have two break glass accounts (recommended) add both to the list.
+// -----------------------------------------------------------------------------
+let BreakGlassAccounts = dynamic([
+    "breakglass@yourdomain.onmicrosoft.com"     // Primary break glass account UPN
+    // "breakglass2@yourdomain.onmicrosoft.com"  // Uncomment if you have a secondary break glass account
+]);
+
+// -----------------------------------------------------------------------------
+// MAIN QUERY
+// Pull all sign-in events from the SigninLogs table for the break glass account.
+// SigninLogs is populated by Microsoft Entra ID and feeds into Log Analytics
+// when diagnostic settings are configured to export sign-in logs.
+// We look back 90 days by default — adjust the TimeGenerated filter as needed.
+// -----------------------------------------------------------------------------
+SigninLogs
+| where TimeGenerated >= ago(90d)                          // Look back 90 days — adjust as needed
+| where UserPrincipalName in (BreakGlassAccounts)          // Filter to break glass accounts only
+| project                                                   // Select only the fields we care about
+    TimeGenerated,                                          // When the sign-in occurred
+    UserPrincipalName,                                      // Which break glass account was used
+    AppDisplayName,                                         // What application was accessed
+    IPAddress,                                              // Where the sign-in came from
+    Location,                                               // Geographic location of the sign-in
+    ResultType,                                             // 0 = success, anything else = failure code
+    ResultDescription,                                      // Human-readable result description
+    ConditionalAccessStatus,                                // Whether CA policies applied
+    AuthenticationRequirement,                              // MFA required or single factor
+    DeviceDetail,                                           // Device information if available
+    RiskLevelDuringSignIn,                                  // Entra ID risk score at time of sign-in
+    RiskLevelAggregated,                                    // Aggregated risk level for the identity
+    CorrelationId                                           // Use this to correlate with other log tables
+| extend SignInResult = iff(ResultType == 0, "SUCCESS", strcat("FAILED - Code: ", tostring(ResultType)))
+| extend AlertSeverity = iff(ResultType == 0, "HIGH", "MEDIUM")  // Successful break glass sign-ins are HIGH severity
+| sort by TimeGenerated desc                                // Most recent sign-ins first
+
+// -----------------------------------------------------------------------------
+// NOTES FOR PRODUCTION USE
+// -----------------------------------------------------------------------------
+// 1. In Microsoft Sentinel, wrap this query in a Scheduled Analytics Rule
+//    with a frequency of 5 minutes and a lookback of 1 hour to get near
+//    real-time alerting on any break glass usage.
+//
+// 2. Set the alert severity to High and route it to your SOC or on-call team
+//    immediately. Break glass usage should never go uninvestigated.
+//
+// 3. The ConditionalAccessStatus field confirms whether CA policies applied.
+//    For a properly configured break glass account this should show "notApplied"
+//    since the account is excluded from all CA policies by design.
+//
+// 4. Correlate any hits against AuditLogs to see what actions were taken
+//    during the break glass session:
+//
+//    AuditLogs
+//    | where CorrelationId == "<CorrelationId from SigninLogs result>"
+//    | project TimeGenerated, OperationName, Result, InitiatedBy, TargetResources
+// =============================================================================

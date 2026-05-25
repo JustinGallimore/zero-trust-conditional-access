@@ -1,0 +1,171 @@
+{
+  "_comment": "This is a sanitized sample export of a Conditional Access policy from Microsoft Entra ID. All tenant IDs, object IDs, and group IDs have been replaced with placeholder values. This represents the policy structure used in this lab to enforce MFA for all users excluding the break glass account.",
+  "value": [
+    {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "templateId": null,
+      "displayName": "Require MFA for All Users",
+      "createdDateTime": "2026-04-01T00:00:00Z",
+      "modifiedDateTime": "2026-04-15T00:00:00Z",
+      "state": "enabled",
+      "partialEnablementStrategy": null,
+      "conditions": {
+        "userRiskLevels": [],
+        "signInRiskLevels": [],
+        "clientAppTypes": [
+          "all"
+        ],
+        "servicePrincipalRiskLevels": [],
+        "insiderRiskLevels": null,
+        "platforms": null,
+        "locations": null,
+        "devices": null,
+        "clientApplications": null,
+        "applications": {
+          "includeApplications": [
+            "All"
+          ],
+          "excludeApplications": [],
+          "includeUserActions": [],
+          "includeAuthenticationContextClassReferences": [],
+          "applicationFilter": null
+        },
+        "users": {
+          "includeUsers": [
+            "All"
+          ],
+          "excludeUsers": [
+            "YOUR_BREAK_GLASS_ACCOUNT_OBJECT_ID"
+          ],
+          "includeGroups": [],
+          "excludeGroups": [],
+          "includeRoles": [],
+          "excludeRoles": [],
+          "includeGuestsOrExternalUsers": null,
+          "excludeGuestsOrExternalUsers": null
+        }
+      },
+      "grantControls": {
+        "operator": "OR",
+        "builtInControls": [
+          "mfa"
+        ],
+        "customAuthenticationFactors": [],
+        "termsOfUse": [],
+        "authenticationStrength": null
+      },
+      "sessionControls": null
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000002",
+      "templateId": null,
+      "displayName": "Block Legacy Authentication",
+      "createdDateTime": "2026-04-01T00:00:00Z",
+      "modifiedDateTime": "2026-04-15T00:00:00Z",
+      "state": "enabled",
+      "partialEnablementStrategy": null,
+      "conditions": {
+        "userRiskLevels": [],
+        "signInRiskLevels": [],
+        "clientAppTypes": [
+          "exchangeActiveSync",
+          "other"
+        ],
+        "servicePrincipalRiskLevels": [],
+        "insiderRiskLevels": null,
+        "platforms": null,
+        "locations": null,
+        "devices": null,
+        "clientApplications": null,
+        "applications": {
+          "includeApplications": [
+            "All"
+          ],
+          "excludeApplications": [],
+          "includeUserActions": [],
+          "includeAuthenticationContextClassReferences": [],
+          "applicationFilter": null
+        },
+        "users": {
+          "includeUsers": [
+            "All"
+          ],
+          "excludeUsers": [
+            "YOUR_BREAK_GLASS_ACCOUNT_OBJECT_ID"
+          ],
+          "includeGroups": [],
+          "excludeGroups": [],
+          "includeRoles": [],
+          "excludeRoles": [],
+          "includeGuestsOrExternalUsers": null,
+          "excludeGuestsOrExternalUsers": null
+        }
+      },
+      "grantControls": {
+        "operator": "OR",
+        "builtInControls": [
+          "block"
+        ],
+        "customAuthenticationFactors": [],
+        "termsOfUse": [],
+        "authenticationStrength": null
+      },
+      "sessionControls": null
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000003",
+      "templateId": null,
+      "displayName": "Require MFA for Azure Management",
+      "createdDateTime": "2026-04-01T00:00:00Z",
+      "modifiedDateTime": "2026-04-15T00:00:00Z",
+      "state": "enabled",
+      "partialEnablementStrategy": null,
+      "conditions": {
+        "userRiskLevels": [],
+        "signInRiskLevels": [],
+        "clientAppTypes": [
+          "all"
+        ],
+        "servicePrincipalRiskLevels": [],
+        "insiderRiskLevels": null,
+        "platforms": null,
+        "locations": null,
+        "devices": null,
+        "clientApplications": null,
+        "applications": {
+          "includeApplications": [
+            "797f4846-ba00-4fd7-ba43-dac1f8f63013"
+          ],
+          "excludeApplications": [],
+          "includeUserActions": [],
+          "includeAuthenticationContextClassReferences": [],
+          "applicationFilter": null
+        },
+        "users": {
+          "includeUsers": [
+            "All"
+          ],
+          "excludeUsers": [
+            "YOUR_BREAK_GLASS_ACCOUNT_OBJECT_ID"
+          ],
+          "includeGroups": [],
+          "excludeGroups": [],
+          "includeRoles": [],
+          "excludeRoles": [],
+          "includeGuestsOrExternalUsers": null,
+          "excludeGuestsOrExternalUsers": null
+        }
+      },
+      "grantControls": {
+        "operator": "OR",
+        "builtInControls": [
+          "mfa"
+        ],
+        "customAuthenticationFactors": [],
+        "termsOfUse": [],
+        "authenticationStrength": null
+      },
+      "sessionControls": null
+    }
+  ]
+}
