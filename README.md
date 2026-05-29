@@ -1,4 +1,4 @@
-# \## \[VIDEO OVERVIEW OF THIS LAB](https://www.loom.com/share/14a4e740b1b54742a857d07ecba11658)
+<h2><a href="https://www.loom.com/share/14a4e740b1b54742a857d07ecba11658">VIDEO OVERVIEW OF THIS LAB</a></h2>
 
 # Zero Trust Conditional Access Policy Set
 
