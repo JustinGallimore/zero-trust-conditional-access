@@ -62,8 +62,8 @@ After resolving all three, connected to Microsoft Graph and ran the following bu
 
 ```powershell
 Get-MgUser -All | ForEach-Object {
-    Update-MgUser -UserId $\_.Id -UsageLocation "US"
-    Write-Host "Updated: $($\_.DisplayName)"
+    Update-MgUser -UserId $\\\_.Id -UsageLocation "US"
+    Write-Host "Updated: $($\\\_.DisplayName)"
 }
 ```
 
@@ -223,12 +223,12 @@ After assigning the Contributor role, attempting to create the rg-iam-lab resour
 ├── Screenshots/
 │   └── (50 screenshots documenting the full build)
 └── Policies/
-    ├── CA001\_All\_Users\_Require\_MFA.md
-    ├── CA002\_All\_Users\_Block\_Legacy\_Authentication.md
-    ├── CA003\_All\_Users\_Require\_Compliant\_Device.md
-    ├── CA004\_All\_Users\_Require\_MFA\_Sign\_In\_Risk.md
-    ├── CA005\_All\_Users\_Require\_Password\_Change\_High\_User\_Risk.md
-    └── CA006\_Privileged\_Roles\_Require\_Phishing\_Resistant\_MFA.md
+    ├── CA001\\\_All\\\_Users\\\_Require\\\_MFA.md
+    ├── CA002\\\_All\\\_Users\\\_Block\\\_Legacy\\\_Authentication.md
+    ├── CA003\\\_All\\\_Users\\\_Require\\\_Compliant\\\_Device.md
+    ├── CA004\\\_All\\\_Users\\\_Require\\\_MFA\\\_Sign\\\_In\\\_Risk.md
+    ├── CA005\\\_All\\\_Users\\\_Require\\\_Password\\\_Change\\\_High\\\_User\\\_Risk.md
+    └── CA006\\\_Privileged\\\_Roles\\\_Require\\\_Phishing\\\_Resistant\\\_MFA.md
 ```
 
 \---
